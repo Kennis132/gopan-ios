@@ -571,8 +571,8 @@ struct ShareViewerSheet: View {
 
     private func infoText(_ meta: JSON) -> String {
         var info = "\(ByteFmt.bytes(meta["size"].int64)) · 已下载 \(meta["hits"].int) 次"
-        if meta["expiresAt"].int64Value > 0 {
-            info += " · 到期 \(ByteFmt.dateTime(meta["expiresAt"].int64Value))"
+        if meta["expiresAt"].int64 > 0 {
+            info += " · 到期 \(ByteFmt.dateTime(meta["expiresAt"].int64))"
         }
         return info
     }

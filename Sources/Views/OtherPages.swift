@@ -135,8 +135,8 @@ struct ShareCard: View {
     @State private var copied = false
 
     private var status: (text: String, color: Color) {
-        let expiresAt = share["expires_at"].int64Value
-        let maxHits = share["max_hits"].int64Value
+        let expiresAt = share["expires_at"].int64Value ?? 0
+        let maxHits = share["max_hits"].int64Value ?? 0
         let hits = share["hits"].int64
         if expiresAt > 0 && expiresAt < Date().timeIntervalSince1970 * 1000 {
             return ("已过期", t.error)
@@ -189,13 +189,13 @@ struct ShareCard: View {
                 HStack(spacing: 14) {
                     Label(share["needs_password"].flag ? "密码保护" : "无需密码",
                           systemImage: share["needs_password"].flag ? "lock" : "lock.open")
-                    Label("\(share["hits"].int) / \(share["max_hits"].int64Value == 0 ? "不限" : share["max_hits"].string) 次",
+                    Label("\(share["hits"].int) / \(share["max_hits"].int64 == 0 ? "不限" : share["max_hits"].string) 次",
                           systemImage: "eye")
                 }
                 .font(.gLabelSmall)
                 .foregroundStyle(t.onSurfaceVariant)
                 Spacer().frame(height: 10)
-                Text(share["expires_at"].int64Value > 0 ? "到期：\(ByteFmt.dateTime(share["expires_at"].int64Value))" : "长期有效")
+                Text(share["expires_at"].int64 > 0 ? "到期：\(ByteFmt.dateTime(share["expires_at"].int64))" : "长期有效")
                     .font(.gBodySmall)
                     .foregroundStyle(t.onSurfaceVariant)
                 Spacer().frame(height: 14)
@@ -312,7 +312,7 @@ struct MessageCard: View {
     }
 
     private var canDelete: Bool {
-        let uid = m["user_id"].int64Value
+        let uid = m["user_id"].int64
         let myId = state.user?["id"].int64Value ?? -1
         return (uid > 0 && uid == myId) || state.user?["role"].string == "admin"
     }

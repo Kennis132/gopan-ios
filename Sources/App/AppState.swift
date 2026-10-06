@@ -403,6 +403,28 @@ final class AppState: ObservableObject {
         }
     }
 
+    /// 批量移动（MoveChooserSheet 多选模式）
+    func batchMoveTo(_ target: Int?, items: [JSON], isFolders: [Bool]) async {
+        var moved = 0
+        for (index, item) in items.enumerated() {
+            let isDir = index < isFolders.count ? isFolders[index] : false
+            do {
+                let id = item["id"].int
+                if isDir {
+                    _ = try await client.moveFolder(id: id, folderId: target ?? 0)
+                } else {
+                    _ = try await client.moveFile(id: id, folderId: target ?? 0)
+                }
+                moved += 1
+            } catch {
+                // 单项失败不阻断其余项
+            }
+        }
+        selected.removeAll()
+        showNotice("已移动 \(moved) 项")
+        await loadFiles()
+    }
+
     /// 401 → 强制登出（传输断点保留），其余显示错误横幅
     func handle(_ error: Error) {
         let api = error as? ApiError
