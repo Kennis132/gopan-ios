@@ -43,6 +43,9 @@ targets:
     deploymentTarget: "16.0"
     sources:
       - Tests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: gopan
 schemes:
