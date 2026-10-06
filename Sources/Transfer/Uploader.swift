@@ -20,11 +20,13 @@ public final class UploadManager: @unchecked Sendable {
     }
 
     public static let cancelledError = ApiError("已取消上传", status: 0, code: "cancelled")
+    public static let pausedError = ApiError("已暂停", status: 0, code: "paused")
 
     final class JobController: @unchecked Sendable {
         let jobId: String
         let stateLock = NSLock()
         var cancelled = false
+        var paused = false
         var sent: Int64 = 0
         var total: Int64 = 0
         var name = ""
@@ -39,8 +41,17 @@ public final class UploadManager: @unchecked Sendable {
             return cancelled
         }
 
+        var isPaused: Bool {
+            stateLock.lock(); defer { stateLock.unlock() }
+            return paused
+        }
+
         func cancel() {
             stateLock.lock(); cancelled = true; stateLock.unlock()
+        }
+
+        func pause() {
+            stateLock.lock(); paused = true; stateLock.unlock()
         }
     }
 
@@ -144,7 +155,7 @@ public final class UploadManager: @unchecked Sendable {
                     let file = try FileHandle(forReadingFrom: localPath)
                     defer { try? file.close() }
                     while let index = cursor.next() {
-                        if controller.isCancelled { return }
+                        if controller.isCancelled || controller.isPaused { return }
                         let chunkLen = Int(min(Int64(chunkSize), size - Int64(index) * Int64(chunkSize)))
                         guard chunkLen > 0 else { break }
                         try file.seek(toOffset: UInt64(index) * UInt64(chunkSize))
@@ -160,6 +171,12 @@ public final class UploadManager: @unchecked Sendable {
                 }
             }
             try await group.waitForAll()
+        }
+
+        if controller.isPaused {
+            // 暂停：不 abandon 服务端会话、不忘记断点记录，恢复时按 receivedChunks 跳传
+            emit(controller, "paused")
+            throw Self.pausedError
         }
 
         if controller.isCancelled {
@@ -182,6 +199,7 @@ public final class UploadManager: @unchecked Sendable {
         var delay: UInt64 = 400_000_000
         for attempt in 1...4 {
             if controller.isCancelled { return }
+            if controller.isPaused { throw Self.pausedError }
             do {
                 try await client.uploadChunk(uploadId: uploadId, index: index, data: data)
                 return
@@ -199,6 +217,12 @@ public final class UploadManager: @unchecked Sendable {
     public func cancel(jobId: String) {
         lock.lock(); defer { lock.unlock() }
         active[jobId]?.cancel()
+    }
+
+    /// 暂停：停止发片但保留服务端会话与断点记录
+    public func pause(jobId: String) {
+        lock.lock(); defer { lock.unlock() }
+        active[jobId]?.pause()
     }
 
     private func emit(_ controller: JobController, _ phase: String, index: Int? = nil, attempt: Int? = nil, message: String? = nil) {

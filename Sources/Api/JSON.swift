@@ -71,7 +71,14 @@ extension JSON: ExpressibleByDictionaryLiteral {
     }
 }
 
+extension JSON: Identifiable {
+    public var id: String { String(describing: self) }
+}
+
 public extension JSON {
+    /// 文件/目录条目的稳定标识（列表 ForEach 用）
+    var idValue: Int { self["id"].int }
+
     subscript(key: String) -> JSON {
         if case let .object(o) = self { return o[key] ?? .null }
         return .null

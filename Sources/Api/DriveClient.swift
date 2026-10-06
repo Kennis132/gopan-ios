@@ -342,6 +342,80 @@ public final class DriveClient: @unchecked Sendable {
         try await requestJSON("DELETE", "/api/uploads/\(uploadId)")
     }
 
+    // MARK: - sessions（登录设备）
+
+    @discardableResult
+    public func sessions() async throws -> JSON {
+        try await requestJSON("GET", "/api/me/sessions")
+    }
+
+    @discardableResult
+    public func revokeOtherSessions() async throws -> JSON {
+        try await requestJSON("DELETE", "/api/me/sessions")
+    }
+
+    // MARK: - guestbook（留言板）
+
+    @discardableResult
+    public func guestbook(limit: Int = 50) async throws -> JSON {
+        try await requestJSON("GET", "/api/guestbook?limit=\(limit)")
+    }
+
+    @discardableResult
+    public func postGuestbook(_ message: String) async throws -> JSON {
+        try await requestJSON("POST", "/api/guestbook", body: ["message": .string(message)])
+    }
+
+    @discardableResult
+    public func deleteGuestbook(id: Int) async throws -> JSON {
+        try await requestJSON("DELETE", "/api/guestbook/\(id)")
+    }
+
+    // MARK: - shares 扩展
+
+    @discardableResult
+    public func patchShare(id: Int, visibility: String) async throws -> JSON {
+        try await requestJSON("PATCH", "/api/shares/\(id)", body: ["visibility": .string(visibility)])
+    }
+
+    // MARK: - 公开分享（查看他人分享）
+
+    @discardableResult
+    public func publicShare(token: String) async throws -> JSON {
+        try await requestJSON("GET", "/api/public/shares/\(token)")
+    }
+
+    @discardableResult
+    public func unlockShare(token: String, password: String?) async throws -> JSON {
+        try await requestJSON("POST", "/api/public/shares/\(token)/unlock", body: ["password": password.map(JSON.string) ?? .null])
+    }
+
+    /// 分享文件下载请求（ticket 一次性 5 分钟有效）
+    public func makeShareFileRequest(token: String, ticket: String) throws -> URLRequest {
+        try makeStreamRequest(pathname: "/api/public/shares/\(token)/file?ticket=\(ticket)")
+    }
+
+    /// 通用 API 请求构造（HEAD 预览探测等），带会话 Cookie，不加 CSRF
+    public func makeRequest(method: String, pathname: String) throws -> URLRequest {
+        let url = try absoluteURL(pathname)
+        var request = URLRequest(url: url)
+        request.httpMethod = method
+        lock.lock()
+        let cookie = jar.header()
+        lock.unlock()
+        if !cookie.isEmpty {
+            request.setValue(cookie, forHTTPHeaderField: "Cookie")
+        }
+        return request
+    }
+
+    // MARK: - 公开用户主页
+
+    @discardableResult
+    public func usersPublicProfile(_ username: String) async throws -> JSON {
+        try await requestJSON("GET", "/api/users/\(username)")
+    }
+
     // MARK: - streaming（下载管理器 / 媒体播放用）
 
     public func makeStreamRequest(pathname: String, range: String? = nil) throws -> URLRequest {
