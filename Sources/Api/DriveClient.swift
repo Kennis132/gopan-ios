@@ -211,7 +211,7 @@ public final class DriveClient: @unchecked Sendable {
 
     @discardableResult
     public func mkdir(_ name: String, parentId: Int? = nil) async throws -> JSON {
-        try await requestJSON("POST", "/api/files/folder", body: ["name": .string(name), "parentId": folderId.map(JSON.int) ?? .null])
+        try await requestJSON("POST", "/api/files/folder", body: ["name": .string(name), "parentId": parentId.map(JSON.int) ?? .null])
     }
 
     @discardableResult
@@ -319,7 +319,7 @@ public final class DriveClient: @unchecked Sendable {
 
     @discardableResult
     public func uploadInit(name: String, size: Int64, folderId: Int?) async throws -> JSON {
-        try await requestJSON("POST", "/api/uploads/init", body: ["name": .string(name), "size": .int64(Int64(size)), "folderId": folderId.map(JSON.int) ?? .null])
+        try await requestJSON("POST", "/api/uploads/init", body: ["name": .string(name), "size": .int(Int(size)), "folderId": folderId.map(JSON.int) ?? .null])
     }
 
     @discardableResult

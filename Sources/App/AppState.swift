@@ -207,7 +207,7 @@ final class AppState: ObservableObject {
 
     func rename(_ item: JSON, isFolder: Bool, to newName: String) async {
         do {
-            let id = item["id"].intValue
+            let id = item["id"].int
             _ = isFolder ? try await client.renameFolder(id: id, name: newName) : try await client.renameFile(id: id, name: newName)
             await refresh()
         } catch {
@@ -217,7 +217,7 @@ final class AppState: ObservableObject {
 
     func delete(_ item: JSON, isFolder: Bool) async {
         do {
-            let id = item["id"].intValue
+            let id = item["id"].int
             _ = isFolder ? try await client.deleteFolder(id: id) : try await client.deleteFile(id: id)
             await refresh()
         } catch {
