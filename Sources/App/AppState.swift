@@ -783,7 +783,8 @@ final class AppState: ObservableObject {
         let id = task.id
         rates[id] = TransferRate()
         let t = Task { [weak self] in
-            await self?.executeTask(task)
+            guard let self else { return }
+            await self.executeTask(task)
         }
         runners[id] = t
     }
