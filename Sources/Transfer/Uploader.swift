@@ -110,8 +110,7 @@ public final class UploadManager: @unchecked Sendable {
         }
         if uploadId == nil {
             let initResp = try await client.uploadInit(name: name, size: size, folderId: folderId)
-            let newId = initResp["uploadId"].stringValue
-            guard !newId.isEmpty else {
+            guard let newId = initResp["uploadId"].stringValue, !newId.isEmpty else {
                 throw ApiError("上传初始化失败：服务端未返回 uploadId", status: 0, code: nil)
             }
             uploadId = newId

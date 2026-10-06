@@ -98,7 +98,7 @@ public final class FileUploadResumeStore: UploadResumeStore, @unchecked Sendable
     }
 
     private func writeLocked(_ doc: [String: String]) {
-        let payload = JSON(object: doc.mapValues { .string($0) })
+        let payload = JSON.object(doc.mapValues { JSON.string($0) })
         if let data = try? payload.encodedData() {
             try? data.write(to: fileURL, options: .atomic)
         }

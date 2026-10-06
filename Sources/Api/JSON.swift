@@ -61,6 +61,16 @@ public enum JSON: Equatable, Sendable {
     }
 }
 
+extension JSON: ExpressibleByDictionaryLiteral {
+    public init(dictionaryLiteral elements: (String, JSON)...) {
+        var object: [String: JSON] = [:]
+        for (key, value) in elements {
+            object[key] = value
+        }
+        self = .object(object)
+    }
+}
+
 public extension JSON {
     subscript(key: String) -> JSON {
         if case let .object(o) = self { return o[key] ?? .null }
