@@ -189,8 +189,9 @@ final class AppState: ObservableObject {
         resumeStore = FileUploadResumeStore(directory: Self.supportDirectory)
         pathMonitor.pathUpdateHandler = { [weak self] path in
             Task { @MainActor in
-                self?.pathIsExpensive = path.isExpensive || path.isConstrained
-                self?.pumpTransfers()
+                guard let self else { return }
+                self.pathIsExpensive = path.isExpensive || path.isConstrained
+                self.pumpTransfers()
             }
         }
         pathMonitor.start(queue: DispatchQueue(label: "gopan.path"))
