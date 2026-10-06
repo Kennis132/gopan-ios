@@ -104,6 +104,11 @@ public extension JSON {
         return nil
     }
 
+    /// 便捷布尔（nil 视为 false）；命名避开 enum case `bool` 的成员查找优先级
+    var flag: Bool {
+        boolValue ?? false
+    }
+
     var intValue: Int? {
         switch self {
         case let .int(i): return i

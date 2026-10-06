@@ -308,7 +308,7 @@ struct ShareComposerSheet: View {
             GField(label: "有效天数", placeholder: "7", text: $days, keyboard: .numberPad, supporting: "留空为长期，最多 \(shareMaxDays) 天")
             GField(label: "访问密码（可选）", placeholder: "", text: $password)
             GField(label: "最大访问次数", placeholder: "", text: $hits, keyboard: .numberPad,
-                   supporting: limits["shareAllowUnlimitedHits"].bool == false ? "当前站点要求填写访问次数" : "留空为不限次数")
+                   supporting: limits["shareAllowUnlimitedHits"].flag == false ? "当前站点要求填写访问次数" : "留空为不限次数")
             Toggle(isOn: $publicShow) {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("在我的公开主页展示").font(.gBodyLarge).foregroundStyle(t.onSurface)
@@ -534,7 +534,7 @@ struct ShareViewerSheet: View {
                     .foregroundStyle(t.onSurfaceVariant)
                 Spacer().frame(height: 10)
                 statusLine(meta)
-                if meta["needsPassword"].bool && ticket == nil {
+                if meta["needsPassword"].flag && ticket == nil {
                     Spacer().frame(height: 12)
                     GField(label: "分享密码", placeholder: "", text: $password, secure: true)
                 }
@@ -579,12 +579,12 @@ struct ShareViewerSheet: View {
 
     @ViewBuilder
     private func statusLine(_ meta: JSON) -> some View {
-        if meta["available"].bool == false {
+        if meta["available"].flag == false {
             let reason = meta["reason"].string
             Text(reason.isEmpty ? "链接不可用" : reason)
                 .font(.gLabelSmall)
                 .foregroundStyle(t.error)
-        } else if meta["needsPassword"].bool && ticket == nil {
+        } else if meta["needsPassword"].flag && ticket == nil {
             Text("需要访问密码").font(.gLabelSmall).foregroundStyle(t.onSurfaceVariant)
         } else {
             Text("可以下载").font(.gLabelSmall).foregroundStyle(t.success)
@@ -592,7 +592,7 @@ struct ShareViewerSheet: View {
     }
 
     private func downloadButton(_ meta: JSON) -> some View {
-        let needsPassword = meta["needsPassword"].bool && ticket == nil
+        let needsPassword = meta["needsPassword"].flag && ticket == nil
         let label = downloading ? "正在下载…"
             : savedPath != nil ? "重新下载"
             : needsPassword ? (password.isEmpty ? "先填写访问密码" : "解锁并下载")
@@ -782,7 +782,7 @@ struct SessionSheet: View {
                                     .font(.system(size: 17))
                                     .foregroundStyle(t.primary)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(s["current"].bool ? "当前设备" : "其他登录会话")
+                                    Text(s["current"].flag ? "当前设备" : "其他登录会话")
                                         .font(.gBodyLarge)
                                         .foregroundStyle(t.onSurface)
                                     Text("登录于 \(s["created_at"].string)")
@@ -790,7 +790,7 @@ struct SessionSheet: View {
                                         .foregroundStyle(t.onSurfaceVariant)
                                 }
                                 Spacer()
-                                if s["current"].bool {
+                                if s["current"].flag {
                                     Image(systemName: "checkmark.circle.fill")
                                         .font(.system(size: 17))
                                         .foregroundStyle(t.primary)
