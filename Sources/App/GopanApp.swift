@@ -55,6 +55,8 @@ struct RootView: View {
                 MainView()
             }
         }
+        // 启动引导：恢复 Keychain 会话 / 迁移中断的传输任务
+        .task { await state.bootstrap() }
         // 全局确认弹窗（对标安卓 ConfirmSheet）
         .alert(
             state.confirm?.title ?? "",
