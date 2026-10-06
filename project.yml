@@ -4,7 +4,7 @@ options:
   createIntermediateGroups: true
 settings:
   base:
-    SWIFT_VERSION: "5.10"
+    SWIFT_VERSION: "5.0"
 targets:
   gopan:
     type: application

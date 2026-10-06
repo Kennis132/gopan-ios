@@ -80,11 +80,11 @@ final class AppState: ObservableObject {
     @Published var transfers: [TransferRow] = []
     @Published var alertMessage: String?
 
-    static var documentsDirectory: URL {
+    nonisolated static var documentsDirectory: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
 
-    static var supportDirectory: URL {
+    nonisolated static var supportDirectory: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return base.appendingPathComponent("Gopan", isDirectory: true)
     }
