@@ -35,7 +35,6 @@ struct WelcomeView: View {
                 .padding(.horizontal, 26)
                 .frame(minHeight: geo.size.height)
             }
-            .scrollBounceBehavior(.basedOnSize)
             .background(t.background)
         }
         .task {

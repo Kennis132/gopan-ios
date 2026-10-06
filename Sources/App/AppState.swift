@@ -274,7 +274,7 @@ final class AppState: ObservableObject {
             let s = try await client.site()
             site = s
             siteLoaded = true
-            if loginRegister && !s["registrationOpen"].boolValue {
+            if loginRegister && !s["registrationOpen"].bool {
                 loginError = "站点未开放注册"
                 return
             }

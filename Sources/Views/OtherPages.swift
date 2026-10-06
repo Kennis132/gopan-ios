@@ -187,8 +187,8 @@ struct ShareCard: View {
                 }
                 Spacer().frame(height: 16)
                 HStack(spacing: 14) {
-                    Label(share["needs_password"].boolValue ? "密码保护" : "无需密码",
-                          systemImage: share["needs_password"].boolValue ? "lock" : "lock.open")
+                    Label(share["needs_password"].bool ? "密码保护" : "无需密码",
+                          systemImage: share["needs_password"].bool ? "lock" : "lock.open")
                     Label("\(share["hits"].int) / \(share["max_hits"].int64Value == 0 ? "不限" : share["max_hits"].string) 次",
                           systemImage: "eye")
                 }
@@ -285,7 +285,7 @@ struct CommunityView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    .disabled(state.site["guestbookOpen"].boolValue == false && state.siteLoaded)
+                    .disabled(state.site["guestbookOpen"].bool == false && state.siteLoaded)
 
                     if state.messages.isEmpty && !state.loadingFiles {
                         EmptyStateView(icon: "bubble.left.and.bubble.right", title: "还没有留言", detail: "写下第一条留言，和大家打个招呼。")
@@ -448,7 +448,7 @@ struct ProfileView: View {
                 .buttonStyle(.plain)
             }
         }
-        .onChange(of: avatarPicker) { _, item in
+        .onChange(of: avatarPicker) { item in
             guard let item else { return }
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self),

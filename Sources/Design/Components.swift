@@ -358,7 +358,7 @@ struct GField: View {
             .keyboardType(keyboard)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
-            .onChange(of: text.wrappedValue) { _, newValue in
+            .onChange(of: text.wrappedValue) { newValue in
                 if let limit, newValue.count > limit {
                     text.wrappedValue = String(newValue.prefix(limit))
                 }

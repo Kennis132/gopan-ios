@@ -116,7 +116,7 @@ struct SettingsView: View {
                     detail: "打开后会请求系统通知权限，用于留言更新提醒。",
                     isOn: $state.messageNotify
                 )
-                .onChange(of: state.messageNotify) { _, on in
+                .onChange(of: state.messageNotify) { on in
                     if on {
                         Task {
                             let center = UNUserNotificationCenter.current()
