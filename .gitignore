@@ -1,0 +1,15 @@
+# XcodeGen 生成物
+*.xcodeproj
+xcuserdata/
+DerivedData/
+
+# 构建产物
+build/
+ExportOptions.plist
+
+# 密钥（绝不入库）
+*.p8
+private_keys/
+
+# 系统
+.DS_Store

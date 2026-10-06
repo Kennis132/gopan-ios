@@ -1,0 +1,55 @@
+name: iOS Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: xcodegen generate
+
+      # 单元测试
+      - name: Run unit tests
+        run: |
+          xcodebuild test \
+            -project gopan.xcodeproj -scheme gopan \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest"
+
+      # 编译未签名 IPA（供 Sideloadly / 爱思助手用免费 Apple ID 自签后安装）
+      - name: Build unsigned IPA
+        run: |
+          xcodebuild \
+            -project gopan.xcodeproj -scheme gopan \
+            -configuration Release -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+          mkdir -p build/Payload
+          cp -R "build/Build/Products/Release-iphoneos/gopan.app" build/Payload/
+          cd build
+          zip -qry gopan-unsigned.ipa Payload
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gopan-unsigned-ipa
+          path: build/gopan-unsigned.ipa
+
+      - name: Upload build log artifact on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            build/Logs/**/*.xcresult
+          if-no-files-found: ignore

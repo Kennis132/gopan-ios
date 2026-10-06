@@ -1,0 +1,59 @@
+name: gopan
+options:
+  bundleIdPrefix: cn.hcy
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+targets:
+  gopan:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: cn.hcy.gopan.ios
+        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 1
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_STYLE: Automatic
+    info:
+      path: Config/Info.plist
+      properties:
+        CFBundleDisplayName: 篝火云盘
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # 支持自建 http 服务器（默认 http://127.0.0.1:8787），对应安卓 usesCleartextTraffic
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+        # 下载目录在系统"文件"App 中可见，对应安卓 FileProvider 暴露下载目录
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        ITSAppUsesNonExemptEncryption: false
+  gopan-tests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - Tests
+    dependencies:
+      - target: gopan
+schemes:
+  gopan:
+    build:
+      targets:
+        gopan: all
+        gopan-tests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - gopan-tests
