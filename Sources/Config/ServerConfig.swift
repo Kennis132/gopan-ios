@@ -92,7 +92,7 @@ public enum ServerConfig {
         let portSuffix = comps.port.map { ":\($0)" } ?? ""
         return ParsedServerUrl(
             ok: true,
-            url: "\(comps.scheme!)//\(host)\(portSuffix)",
+            url: "\(comps.scheme!)://\(host)\(portSuffix)",
             host: lowerHost,
             secure: secure,
             scope: scope,
