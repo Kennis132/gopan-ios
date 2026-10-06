@@ -20,9 +20,24 @@ jobs:
       # 单元测试
       - name: Run unit tests
         run: |
+          set -o pipefail
           xcodebuild test \
             -project gopan.xcodeproj -scheme gopan \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest"
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest" \
+            2>&1 | tee xcodebuild-test.log
+
+      # 失败时把 error 行吐成 annotation，便于匿名读取排查
+      - name: Surface errors
+        if: failure()
+        run: |
+          { grep -E "error: " xcodebuild-test.log || true; grep -E "Test Case .* failed" xcodebuild-test.log || true; } | sort -u | head -50 | while IFS= read -r line; do
+            echo "::error::${line}"
+            echo "${line}" >> "$GITHUB_STEP_SUMMARY"
+          done
+          tail -40 xcodebuild-test.log > test-tail.log || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat test-tail.log >> "$GITHUB_STEP_SUMMARY" || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
 
       # 编译未签名 IPA（供 Sideloadly / 爱思助手用免费 Apple ID 自签后安装）
       - name: Build unsigned IPA
