@@ -138,7 +138,7 @@ struct ShareCard: View {
         let expiresAt = share["expires_at"].int64Value ?? 0
         let maxHits = share["max_hits"].int64Value ?? 0
         let hits = share["hits"].int64
-        if expiresAt > 0 && expiresAt < Date().timeIntervalSince1970 * 1000 {
+        if expiresAt > 0 && Double(expiresAt) < Date().timeIntervalSince1970 * 1000 {
             return ("已过期", t.error)
         }
         if maxHits > 0 && Int64(hits) >= maxHits {

@@ -266,7 +266,7 @@ struct MediaPreview: View {
             p.play()
             // 监听播放失败（对标安卓播放器错误文案）
             NotificationCenter.default.addObserver(
-                forName: AVPlayerItem.failedToPlayToEndTime, object: item, queue: .main
+                forName: NSNotification.Name.AVPlayerItemFailedToPlayToEndTime, object: item, queue: .main
             ) { _ in
                 playError = true
             }
