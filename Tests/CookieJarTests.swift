@@ -17,7 +17,7 @@ final class CookieJarTests: XCTestCase {
         XCTAssertNil(jar.get("gopan_sess"))
         XCTAssertFalse(jar.header().contains("gopan_sess"))
 
-        let round = CookieJar(cookies: jar.toJSON())
+        var round = CookieJar(cookies: jar.toJSON())
         XCTAssertEqual(round.get("gopan_csrf"), "tok%20en")
     }
 
@@ -31,7 +31,7 @@ final class CookieJarTests: XCTestCase {
         XCTAssertNil(jar.get("stale"))
 
         // 恢复一个已经过期的会话，同样拒绝发送
-        let revived = CookieJar(cookies: [Cookie(name: "gopan_sess", value: "x", expiresAt: now.timeIntervalSince1970 * 1000 - 1000)])
+        var revived = CookieJar(cookies: [Cookie(name: "gopan_sess", value: "x", expiresAt: now.timeIntervalSince1970 * 1000 - 1000)])
         XCTAssertNil(revived.get("gopan_sess"))
     }
 
