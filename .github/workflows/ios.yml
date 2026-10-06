@@ -17,13 +17,19 @@ jobs:
       - name: Generate project
         run: xcodegen generate
 
-      # 单元测试
+      # 单元测试（自动探测 runner 上可用的 iPhone 模拟器，机型名随 Xcode 版本变化）
       - name: Run unit tests
         run: |
           set -o pipefail
+          UDID=$(xcrun simctl list devices available | sed -nE 's/^ *(iPhone[^()]*) \(([0-9A-Fa-f-]{36})\).*/\2/p' | head -1)
+          if [ -z "$UDID" ]; then
+            echo "no iPhone simulator found"; xcrun simctl list devices available; exit 1
+          fi
+          xcodebuild -version
+          echo "Using simulator UDID: $UDID"
           xcodebuild test \
             -project gopan.xcodeproj -scheme gopan \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest" \
+            -destination "platform=iOS Simulator,id=$UDID" \
             2>&1 | tee xcodebuild-test.log
 
       # 失败时把 error 行吐成 annotation，便于匿名读取排查
