@@ -37,7 +37,7 @@ struct SettingsView: View {
         .alert(state.siteName, isPresented: $showAbout) {
             Button("完成", role: .cancel) {}
         } message: {
-            Text("原生 SwiftUI 客户端。\n\n文件、分享、回收站、留言板和账户与现有服务端同步。没有广告与统计 SDK。下载默认保存在应用私有空间，可另存到系统目录。卸载会清除本地文件。")
+            Text("原生 SwiftUI 客户端，UI 对标 Android 端。\n\n原作：hcy_neo（@hcymc）—— 服务端、桌面端与 Android 客户端。文件、分享、回收站、留言板和账户与现有服务端同步。没有广告与统计 SDK。下载默认保存在应用私有空间，可另存到系统目录。卸载会清除本地文件。\n\nMIT License · 原作 © 2026 hcy_neo · iOS 移植 © 2026 Kennis132")
         }
     }
 

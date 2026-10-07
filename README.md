@@ -3,6 +3,10 @@
 gopan 云盘的 iOS 客户端。SwiftUI + URLSession 原生实现，与桌面端（Electron）、
 安卓端（Kotlin/Compose）遵守同一套 `/api/*` 协议契约。
 
+> **原作署名**：篝火云盘由 **[hcy_neo（@hcymc）](https://github.com/hcymc)** 开发，
+> 包括服务端、桌面端与 Android 客户端（MIT License）。本仓库是 UI 完全对标
+> Android 端的 iOS 移植，协议与交互细节以原作为准。
+
 ## 技术决策
 
 - **无第三方依赖**：网络/JSON/加密全部用系统能力（URLSession、CryptoKit、Keychain）。
